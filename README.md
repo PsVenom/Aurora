@@ -5,4 +5,4 @@
 ### text2PCA - converts a given string S into a vector of shape (1024,3). It can be used as an input for AdaIN layer
 ### BART_pl - converts a given string S into an embedding vector of shape(n,1024), where n can vary from 3 to 20. We'll use this to tokenize our text, which can then be used to calculate L(clip). We will also use this as a summarizer for unreasonably long text
  
-# I've also given some inferences from using text2PCA on some bird captions. As you might've noticed, there are some recurring patterns thatwe can use to our advantage
+# I've also given some inferences from using text2PCA on some bird captions. As you might've noticed, there are some recurring patterns that we can use to our advantage
