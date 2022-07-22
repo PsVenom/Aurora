@@ -7,7 +7,7 @@ import numpy as np
 from sklearn.decomposition import PCA
 import subprocess
 
-model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
+model_clip = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
 processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 summarize = pipeline("summarization", model = "facebook/bart-large")
 tokenizer = AutoTokenizer.from_pretrained("facebook/bart-large")
@@ -38,6 +38,6 @@ def t2i(word):
  
 def L_clip(Xt,Yi): #Xt is a string, Yi is an image array
   inputs = processor(text= Xt, images= Yi, return_tensors="pt", padding=True)
-  outputs = model(**inputs)
+  outputs = model_clip(**inputs)
   logits_per_image = outputs.logits_per_image
   return 1 - (logits_per_image/100) #returns a pytorch tensor
