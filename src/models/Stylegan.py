@@ -26,6 +26,7 @@ class StyleGAN(tf.keras.Model):
         self.g_input_shape = self.g_builder.input_shape
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.clip2sg = CLIP2SG()
+        self.clip, self.preprocess  =  clip.load("ViT-B/32", device=self.device)
         self.map_optim = torch.optim.Adam(self.clip2sg.parameters(), lr=0.001)
         self.phase = None
         self.train_step_counter = tf.Variable(0, dtype=tf.int32, trainable=False)
@@ -145,7 +146,7 @@ class StyleGAN(tf.keras.Model):
                         self.mapping.trainable_weights + self.generator.trainable_weights
                 )
                 if self.current_res_log2 >=3:
-                    l_clip = L_clip(real_text_string,tf.Variable(fake_images * 255), model = self.clip2sg) #.astype(np.uint8)
+                    l_clip = L_clip(real_text_string,tf.Variable(fake_images * 255), model = self.clip, preprocess = self.preprocess, device = self.device) #.astype(np.uint8)
                     # self.map_optim.zero_grad()
                     # torch.from_numpy(np.array(l_clip.numpy())).backward()
                     # optimiser.numpy().step()

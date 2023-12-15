@@ -21,7 +21,7 @@ class CLIP2SG(nn.Module):
 
 
 @tf.function
-def L_clip(Xt,Yi, model): #Xt is a string array, Yi is an image array (both tensorflow)
+def L_clip(Xt,Yi, model, preprocess, device): #Xt is a string array, Yi is an image array (both tensorflow)
     #print("Yi:", Yi.shape)
 
     # Xt = BART_t2t(Xt)
