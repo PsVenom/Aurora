@@ -4,6 +4,7 @@ from src.models.helper import *
 import torch
 import matplotlib.pyplot as plt
 from clip import clip
+from src.features.clip_features import CLIP2SG, L_clip
 class StyleGAN(tf.keras.Model):
     def __init__(self, z_dim=512, target_res=64, start_res=4, beta=1, gen_per_epoch = 1, weight = 10):
         super(StyleGAN, self).__init__()
@@ -23,10 +24,12 @@ class StyleGAN(tf.keras.Model):
         self.d_builder = Discriminator(self.start_res_log2, self.target_res_log2)
         self.g_builder = Generator(self.start_res_log2, self.target_res_log2)
         self.g_input_shape = self.g_builder.input_shape
-        self.map_optim = torch.optim.Adam(clip2sg.parameters(), lr=0.001)
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.clip2sg = CLIP2SG()
+        self.map_optim = torch.optim.Adam(self.clip2sg.parameters(), lr=0.001)
         self.phase = None
         self.train_step_counter = tf.Variable(0, dtype=tf.int32, trainable=False)
-
+        self.LOSS = []
         self.loss_weights = {"gradient_penalty": 10, "drift": 0.001}
 
     def grow_model(self, res):
@@ -120,7 +123,7 @@ class StyleGAN(tf.keras.Model):
         for i in range(self.gen_per_epoch):
             with tf.GradientTape() as g_tape:
                 #real text string is actually a list of strings
-                v = clip2sg(clip.tokenize(real_text_string.split("'")[1::2]).type(torch.float32).to(device))
+                v = self.clip2sg(clip.tokenize(real_text_string.split("'")[1::2]).type(torch.float32).to(self.device))
                 #now you just need to convert it to a pytorch tensor
                 v = tf.expand_dims(v.cpu().data.numpy(), axis=0)
                 #print(f"v: shape in train step {v.shape}")
@@ -142,7 +145,7 @@ class StyleGAN(tf.keras.Model):
                         self.mapping.trainable_weights + self.generator.trainable_weights
                 )
                 if self.current_res_log2 >=3:
-                    l_clip = L_clip(real_text_string,tf.Variable(fake_images * 255)) #.astype(np.uint8)
+                    l_clip = L_clip(real_text_string,tf.Variable(fake_images * 255), model = self.clip2sg) #.astype(np.uint8)
                     # self.map_optim.zero_grad()
                     # torch.from_numpy(np.array(l_clip.numpy())).backward()
                     # optimiser.numpy().step()
@@ -189,7 +192,7 @@ class StyleGAN(tf.keras.Model):
                 # torch.from_numpy(np.array(l_clip.numpy())).backward()
                 # optimiser.numpy().step()
                 d_loss+=(1-self.beta)*tf.cast(l_clip,tf.float32)
-            LOSS.append(d_loss)
+            self.LOSS.append(d_loss)
             #print(d_loss)
 
             gradients = total_tape.gradient(
@@ -215,7 +218,7 @@ class StyleGAN(tf.keras.Model):
         style_code = inputs.get("style_code", None)
         v = inputs.get("v", None)
         batch_size = len(v)
-        v = clip2sg(clip.tokenize(v).type(torch.float32).to(device))
+        v = self.clip2sg(clip.tokenize(v).type(torch.float32).to(self.device))
         v = v = tf.expand_dims(v.cpu().data.numpy(), axis=0)
         print("v.shape", v.shape)
         # z = inputs.get("z", None)

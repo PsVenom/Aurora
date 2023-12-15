@@ -4,6 +4,7 @@ from PIL import Image
 import tensorflow as tf
 from src.data.make_dataset import *
 import torch.nn as nn
+import numpy as np
 
 class CLIP2SG(nn.Module):
     def __init__(self):

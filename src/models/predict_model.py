@@ -1,5 +1,5 @@
 import os
-from Stylegan import StyleGAN
+from src.models.Stylegan import StyleGAN
 def call_model_for_train(START_RES = 4, TARGET_RES = 128, BETA = 0.99, gen_per_epoch = 1, weight_dir = None):
     style_gan = StyleGAN(start_res=START_RES, target_res=TARGET_RES, beta = BETA, gen_per_epoch = gen_per_epoch)
     if weight_dir:

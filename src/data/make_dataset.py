@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 import click
 import logging
-from pathlib import Path
-from dotenv import find_dotenv, load_dotenv
-import os
+
+from functools import partial
 import pandas as pd
 import tensorflow as tf
 batch_sizes = {2: 16, 3: 16, 4: 16, 5: 16, 6: 16, 7: 8, 8: 4, 9: 2, 10: 1}
@@ -83,16 +82,25 @@ def resize_image(res, image):
     )
     image = tf.cast(image, tf.float32) / 127.5 - 1.0
     return image
-def make_dataset(input_filepath):
+
+def create_dataloader(res, img_vectors, cap_vector):
+    batch_size = 16
+    dl = img_vectors.map(partial(resize_image, res), num_parallel_calls=tf.data.AUTOTUNE)
+    dl = dl.batch(batch_size, drop_remainder=True).prefetch(1).repeat()
+    dl2 = cap_vector.batch(batch_size, drop_remainder=True).prefetch(1).repeat()
+    return dl, dl2
+def make_dataset(dir):
     """ Runs data processing scripts to turn raw data from (../raw) into
         cleaned data ready to be analyzed (saved in ../processed).
     """
     logger = logging.getLogger(__name__)
     logger.info('making final data set from raw data')
-    caption_dataframe = pd.read_csv(input_filepath)
+    caption_dataframe = pd.read_csv(dir+"/caption_dataframe.csv")
     caption_dataframe['ImagePath'] = caption_dataframe['ImagePath'].apply(lambda x: x.split('/')[-1])
     # caption_dataframe.to_cav(output_filepath)
-    set_data(caption_dataframe, dir_path=
+    cap_vector, img_vectors = set_data(caption_dataframe, dir_path= dir)
+    return cap_vector, img_vectors
+
 
 # if __name__ == '__main__':
 #     log_fmt = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'

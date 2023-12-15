@@ -27,12 +27,6 @@ def minibatch_std(input_tensor, epsilon=1e-8):
     avg_std = tf.reduce_mean(group_std, axis=[1, 2, 3], keepdims=True)
     x = tf.tile(avg_std, [group_size, h, w, 1])
     return tf.concat([input_tensor, x], axis=-1)
-def create_dataloader(res):
-    batch_size = 16
-    dl = img_vectors.map(partial(resize_image, res), num_parallel_calls=tf.data.AUTOTUNE)
-    dl = dl.batch(batch_size, drop_remainder=True).prefetch(1).repeat()
-    dl2 = cap_vector.batch(batch_size, drop_remainder=True).prefetch(1).repeat()
-    return dl, dl2
 def plot_images(images, log2_res, fname=""):
     scales = {2: 0.5, 3: 1, 4: 2, 5: 3, 6: 4, 7: 5, 8: 6, 9: 7, 10: 8}
     scale = scales[log2_res]

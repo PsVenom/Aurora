@@ -1,9 +1,11 @@
 import numpy as np
 import click
-from predict_model import call_model_for_train
+from src.models.predict_model import call_model_for_train
 from src.data.make_dataset import *
+from src.models.helper import plot_images
 import os
 import tensorflow as tf
+import keras
 @click.command()
 @click.argument('input_filepath', type=click.Path(exists=True),  default = os.get_cwd()+'caption_dataframe.csv')
 @click.argument('START_RES', type = click.INT, default = 4, help = 'START_RESOLUTION for base model, default is 4' )
@@ -11,16 +13,18 @@ import tensorflow as tf
 @click.argument('STEPS', type = click.INT, default = 2000, help = 'STEPS for base model training, default is 2000' )
 @click.argument('WEIGHTS', type = click.STRING, default = None, help = 'WEIGHTS for base model training, default is None' )
 def train(input_filepath,start_res, target_res, steps, weights):
-
+    cap_vector, img_vectors = make_dataset(input_filepath)
+    tf.config.run_functions_eagerly(True)
+    style_gan =  call_model_for_train(START_RES=4, TARGET_RES=64, BETA=0.99, gen_per_epoch=1,weight_dir=weights)
+    train_seq(start_res=32, target_res=64, display_images=False, style_gan=style_gan)
 def train_seq(
         start_res=4,
         target_res=128,
         steps_per_epoch=2000,
         display_images=False,
-        stylegan = call_model_for_train(START_RES=4, TARGET_RES=64, BETA=0.99, gen_per_epoch=1,weight_dir=None)
+        style_gan = call_model_for_train(START_RES=4, TARGET_RES=64, BETA=0.99, gen_per_epoch=1,weight_dir=None)
 ):
     opt_cfg = {"learning_rate": 1e-3, "beta_1": 0.0, "beta_2": 0.99, "epsilon": 1e-8}
-    stylegan = call_model_for_train()
     val_batch_size = 16
     val_z = tf.random.normal((val_batch_size, style_gan.z_dim))
     val_noise = style_gan.generate_noise(val_batch_size)
