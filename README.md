@@ -3,9 +3,9 @@ Aurora
 Aurora is a novel text-to-image generation paradigm using CLIP and StyleGAN to generate images. The model uses  unique training paradigm for latent vector guidance
 Unlike other models that use CLIP guidance to modify the already-generated image produced by StyleGAN, this paradigm integrates the CLIP model directly into the model pipeline.
 This model is currently under research, but this repository can be used and tested as is.
-You can use the model in the following notebook:
+Model results on 32x32 and 64x64 resolution
 
-
+![](C:\Users\Parth\Pictures\MixCollage-15-Dec-2023-02-40-PM-8369.jpg)
 Project Organization
 ------------
 
