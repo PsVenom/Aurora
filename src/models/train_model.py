@@ -68,3 +68,5 @@ def train_seq(
             if display_images:
                 images = style_gan({ "noise": val_noise, "alpha": 1.0, "v": "A flower"})
                 plot_images(images, res_log2)
+if __name__ == "__main__":
+    train()
