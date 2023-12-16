@@ -5,7 +5,8 @@ Unlike other models that use CLIP guidance to modify the already-generated image
 This model is currently under research, but this repository can be used and tested as is.
 Model results on 32x32 and 64x64 resolution
 
-![](C:\Users\Parth\Pictures\MixCollage-15-Dec-2023-02-40-PM-8369.jpg)
+![MixCollage-15-Dec-2023-02-40-PM-8369](https://github.com/PsVenom/Aurora/assets/99831413/dd1d843c-a876-44f0-b0b1-7f53741d8ee4)
+
 Project Organization
 ------------
 
