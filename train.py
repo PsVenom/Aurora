@@ -5,7 +5,7 @@ from src.models.predict_model import call_model_for_train
 from src.data.make_dataset import make_dataset
 import os
 @click.command()
-@click.argument('input_filepath', type=click.Path(exists=True),  default = os.get_cwd())
+@click.argument('input_filepath', type=click.Path(exists=True),  default = os.getcwd())
 @click.option('-s', type = click.INT, default = 4, help = 'START_RESOLUTION for base model, default is 4' )
 @click.option('-t', type = click.INT, default = 128, help = 'TARGET_RESOLUTION for base, default is 128' )
 @click.option('-step',  type = click.INT, default = 2000, help = 'STEPS for base model training, default is 2000' )
