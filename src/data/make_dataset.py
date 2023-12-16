@@ -5,11 +5,9 @@ import logging
 from functools import partial
 import pandas as pd
 import tensorflow as tf
-batch_sizes = {2: 16, 3: 16, 4: 16, 5: 16, 6: 16, 7: 8, 8: 4, 9: 2, 10: 1}
 import collections
 import random
 # We adjust the train step accordingly
-train_step_ratio = {k: batch_sizes[2] / v for k, v in batch_sizes.items()}
 #
 # @click.command()
 # @click.argument('input_filepath', type=click.Path(exists=True),  default = os.get_cwd()+'caption_dataframe.csv')

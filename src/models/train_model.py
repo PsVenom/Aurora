@@ -1,27 +1,19 @@
 import numpy as np
 import click
-from src.models.predict_model import call_model_for_train
-from src.data.make_dataset import *
-from src.models.helper import plot_images
+from predict_model import call_model_for_train
+from data.make_dataset import create_dataloader
+from helper import plot_images
 import os
 import tensorflow as tf
 import keras
-@click.command()
-@click.argument('input_filepath', type=click.Path(exists=True),  default = os.get_cwd()+'caption_dataframe.csv')
-@click.argument('START_RES', type = click.INT, default = 4, help = 'START_RESOLUTION for base model, default is 4' )
-@click.argument('TARGET_RES', type = click.INT, default = 128, help = 'TARGET_RESOLUTION for base, default is 128' )
-@click.argument('STEPS', type = click.INT, default = 2000, help = 'STEPS for base model training, default is 2000' )
-@click.argument('WEIGHTS', type = click.STRING, default = None, help = 'WEIGHTS for base model training, default is None' )
-def train(input_filepath,start_res, target_res, steps, weights):
-    cap_vector, img_vectors = make_dataset(input_filepath)
-    tf.config.run_functions_eagerly(True)
-    style_gan =  call_model_for_train(START_RES=4, TARGET_RES=64, BETA=0.99, gen_per_epoch=1,weight_dir=weights)
-    train_seq(start_res=32, target_res=64, display_images=False, style_gan=style_gan)
+batch_sizes = {2: 16, 3: 16, 4: 16, 5: 16, 6: 16, 7: 8, 8: 4, 9: 2, 10: 1}
+
+train_step_ratio = {k: batch_sizes[2] / v for k, v in batch_sizes.items()}
+
 def train_seq(
         start_res=4,
         target_res=128,
         steps_per_epoch=2000,
-        display_images=False,
         style_gan = call_model_for_train(START_RES=4, TARGET_RES=64, BETA=0.99, gen_per_epoch=1,weight_dir=None)
 ):
     opt_cfg = {"learning_rate": 1e-3, "beta_1": 0.0, "beta_2": 0.99, "epsilon": 1e-8}
@@ -65,8 +57,4 @@ def train_seq(
                 dataset, epochs=1, steps_per_epoch=steps, callbacks=[ckpt_cb]
             )
 
-            if display_images:
-                images = style_gan({ "noise": val_noise, "alpha": 1.0, "v": "A flower"})
-                plot_images(images, res_log2)
-if __name__ == "__main__":
-    train()
+
