@@ -10,8 +10,7 @@ import os
 @click.option('-t', type = click.INT, default = 128, help = 'TARGET_RESOLUTION for base, default is 128' )
 @click.option('-step',  type = click.INT, default = 2000, help = 'STEPS for base model training, default is 2000' )
 @click.option('-w',  type = click.STRING, default = None, help = 'WEIGHTS for base model training, default is None' )
-@click.option('-show', type = click.BOOL, default = False,help ='shows image for base model training')
-def train(input_filepath,s, t, step, w, show = False):
+def train(input_filepath,s, t, step, w):
     cap_vector, img_vectors = make_dataset(input_filepath)
     tf.config.run_functions_eagerly(True)
     style_gan =  call_model_for_train(START_RES=s, TARGET_RES=t, BETA=0.99, gen_per_epoch=1,weight_dir=w)
