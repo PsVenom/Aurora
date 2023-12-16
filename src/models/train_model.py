@@ -1,6 +1,6 @@
 import numpy as np
 import click
-from predict_model import call_model_for_train
+from .predict_model import call_model_for_train
 from data.make_dataset import create_dataloader
 from helper import plot_images
 import os
